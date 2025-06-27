@@ -8,7 +8,7 @@ mcp = FastMCP(
     name="Calculator",
     host="0.0.0.0",  # only used for SSE transport (localhost)
     port=8050,  # only used for SSE transport (set this to any port)
-)
+) 
 
 
 # Add a simple calculator tool
@@ -20,7 +20,7 @@ def add(a: int, b: int) -> int:
 
 # Run the server
 if __name__ == "__main__":
-    transport = "stdio"
+    transport = "sse"
     if transport == "stdio":
         print("Running server with stdio transport")
         mcp.run(transport="stdio")

@@ -19,7 +19,7 @@ async def main():
             # Initialize the connection
             await session.initialize()
 
-            # List available tools
+            # List available tools 
             tools_result = await session.list_tools()
             print("Available tools:")
             for tool in tools_result.tools:
