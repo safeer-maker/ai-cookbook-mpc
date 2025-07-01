@@ -13,9 +13,18 @@ mcp = FastMCP(
 
 # Add a simple calculator tool
 @mcp.tool()
-def add(a: int, b: int) -> int:
-    """Add two numbers together"""
-    return a + b
+def add(a, b) -> int:
+    """Add two numbers together.
+    
+    Args:
+        a: The first number
+        b: The second number
+    """
+
+    summ = int(a) + int(b)
+    print(f"Adding {a} and {b} to get {summ}")
+
+    return summ
 
 
 # Run the server
