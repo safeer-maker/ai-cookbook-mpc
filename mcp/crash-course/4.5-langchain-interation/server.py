@@ -56,5 +56,10 @@ async def get_state_and_qrid(longitude: str, latitude: str) -> str:
 # print(result)
 
 if __name__ == "__main__":
-    server.run(transport="stdio")
+    runtype = "sse"
+
+    if runtype == "sse":
+        server.run ("sse")
+    else:
+        server.run(transport="stdio")
 
