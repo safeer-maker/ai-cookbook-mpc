@@ -10,27 +10,28 @@ import nest_asyncio
 
 nest_asyncio.apply()
 
+async def get_tool_names():
 
-server_params = StdioServerParameters(
-    command="python",  # The command to run your server
-    args=["server.py"],  # Arguments to the command
+    server_params = StdioServerParameters(
+        command="python",  # The command to run your server
+        args=["server.py"],  # Arguments to the command
 )
 
-session: Optional[ClientSession] = None
-exit_stack = AsyncExitStack()
+    session: Optional[ClientSession] = None 
 
+    async with AsyncExitStack() as exit_stack:
 
-stdio_transport = await exit_stack.enter_async_context(stdio_client(server_params))
-stdio, write = stdio_transport
-session = await exit_stack.enter_async_context(ClientSession(stdio, write))
+        stdio_transport = await exit_stack.enter_async_context(stdio_client(server_params))
+        stdio, write = stdio_transport
+        session = await exit_stack.enter_async_context(ClientSession(stdio, write))
 
-await session.initialize()
+        await session.initialize()
 
-# List available tools
-tools_result = await session.list_tools()
-print("\nConnected to server with tools:")
-for tool in tools_result.tools:
-    print(f"  - {tool.name}: {tool.description}")
+        print ("Session initialized." )
+        # List available tools
+        tools_result = await session.list_tools()
+        print("\nConnected to server with tools:")
+        for tool in tools_result.tools:
+            print(f"  - {tool.name}: {tool.description}")
 
-
-exit_stack.aclose()
+asyncio.run( get_tool_names() )
