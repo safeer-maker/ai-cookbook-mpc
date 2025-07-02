@@ -34,4 +34,20 @@ async def get_tool_names():
         for tool in tools_result.tools:
             print(f"  - {tool.name}: {tool.description}")
 
-asyncio.run( get_tool_names() )
+        tool_call = await session.call_tool (
+            "get_state_and_qrid",
+            arguments={
+                "longitude": "-122.3321",
+                "latitude": "47.6062"
+            }
+        )
+
+        print("\nTool call result:")
+        print(tool_call)
+
+    return tool_call.content[0].text
+
+
+if __name__ == "__main__":
+    results = asyncio.run(get_tool_names())
+    print (results)
