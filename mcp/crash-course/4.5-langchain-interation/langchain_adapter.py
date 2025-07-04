@@ -5,10 +5,14 @@ nest_asyncio.apply()  # Needed to run interactive python
 
 client = MultiServerMCPClient(
     {
+        # "weather": {
+        #     "command": "python",
+        #     "args": ["/home/safeer/Documents/devops/mcp/mcp/crash-course/4.5-langchain-interation/server.py"],
+        #     "transport": "stdio",
+        # },
         "weather": {
-            "command": "python",
-            "args": ["/home/safeer/Documents/devops/mcp/mcp/crash-course/4.5-langchain-interation/server.py"],
-            "transport": "stdio",
+            "url": "http://localhost:4567/sse",
+            "transport": "sse",
         },
     }
 )
