@@ -42,6 +42,9 @@ async def get_state_and_qrid(longitude: str, latitude: str) -> str:
                 "gridx": gridx,
                 "gridy": gridy
             }
+
+            print(f"Retrieved state: {state}, gridX: {gridx}, gridY: {gridy}")
+            
             return json.dumps(ret)  # <-- FIXED: return as string
         else:
             return json.dumps({"error": "Unable to retrieve weather data."})
