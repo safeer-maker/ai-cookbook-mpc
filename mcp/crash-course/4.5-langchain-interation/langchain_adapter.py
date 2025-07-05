@@ -1,45 +1,68 @@
 from langchain_mcp_adapters.client import MultiServerMCPClient
 import nest_asyncio
 import json
+import asyncio
 
+from langgraph.prebuilt import create_react_agent
 from langchain_openai import ChatOpenAI
-from langchain_core.tools import tool
 from dotenv import load_dotenv
 import os
 
-load_dotenv("../../../.env")  # Load environment variables from .env file
+# Load environment variables
+load_dotenv("../../../.env")
+os.getenv("AIRTABLE_API_KEY", "")
 
-os.getenv("AIRTABLE_API_KEY","")
+# Allow nested event loops (for interactive environments)
+nest_asyncio.apply()
 
-nest_asyncio.apply()  # Needed to run interactive python
+async def main():
+    # Connect to MCP server
+    client = MultiServerMCPClient(
+        {
+            "weather": {
+                "command": "python",
+                "args": ["/home/safeer/Documents/devops/mcp/mcp/crash-course/4.5-langchain-interation/server.py"],
+                "transport": "stdio",
+            },
+            # You can add more tools here if needed
+        }
+    )
 
-client = MultiServerMCPClient(
-    {
-        # "weather": {
-        #     "command": "python",
-        #     "args": ["/home/safeer/Documents/devops/mcp/mcp/crash-course/4.5-langchain-interation/server.py"],
-        #     "transport": "stdio",
-        # },
-        "weather": {
-            "url": "http://localhost:4567/sse",
-            "transport": "sse",
-        },
+    # Get available tools from the MCP server
+    tools = await client.get_tools()
+    print("Available tools:", tools)
 
-    }
-)
+    # Set up the LLM
+    llm = ChatOpenAI(model="gpt-4o-mini")
+    agent = create_react_agent(llm , tools=tools)
+    # llm_with_tools = agent.get (tools)
 
-tools = await client.get_tools()
-tools
+    # LLM-driven tool call
+    # response = llm_with_tools.invoke("What is the grid for Seattle?")
+    # print("LLM response:", response)
 
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
-)
+    # # Direct tool call (async)
+    # tool_result = await tools[0].invoke(
+    #     input={"longitude": "-122.3321", "latitude": "47.6062"}
+    # )
+    # print("Direct tool result:", tool_result)
 
-llm_with_tools = llm.bind_tools(tools)
+    # LLM-driven tool call with agent
+    response = await agent.ainvoke(
+        {"messages": [{"role": "user", "content": "What is the grid for Seattle?"}]} 
+        )
 
-call =  llm_with_tools.invoke ("Hi there! Can you tell me the grid for Seattle?")
+    print( response["messages"][-1].content) 
 
-for tool_call in call.additional_kwargs.get("tool_calls", []):
-    print(f"Tool call: {tool_call}")
+    # Test direct tool call
+    tool_result = await tools[0].ainvoke(input={"longitude": "-122.3321", "latitude": "47.6062"})
+    print("Direct tool result:", tool_result)
 
-await tools[0].invoke( input= json.dumps({"latitude": "47.6062", "longitude": "-122.3321"}))
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+
+# Who to call mcp tool in langchian or langgraph

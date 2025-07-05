@@ -44,7 +44,7 @@ async def get_state_and_qrid(longitude: str, latitude: str) -> str:
             }
 
             print(f"Retrieved state: {state}, gridX: {gridx}, gridY: {gridy}")
-            
+
             return json.dumps(ret)  # <-- FIXED: return as string
         else:
             return json.dumps({"error": "Unable to retrieve weather data."})
@@ -59,7 +59,7 @@ async def get_state_and_qrid(longitude: str, latitude: str) -> str:
 # print(result)
 
 if __name__ == "__main__":
-    runtype = "sse"  # Change to "sse" for SSE transport
+    runtype = "sse2"  # Change to "sse" for SSE transport
 
     if runtype == "sse":
         server.run ("sse")
